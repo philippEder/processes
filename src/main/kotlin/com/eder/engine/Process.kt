@@ -5,7 +5,7 @@ class Process(var startStep: Step? = null,
               var currentSteps: List<Step> = listOf()) {
 
     fun addVariable(variable: Variable) {
-        context.variables[variable.key] = Variable(variable.key, variable.value)
+        context.variables[variable.key] = variable
     }
 
 }

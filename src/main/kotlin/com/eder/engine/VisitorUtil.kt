@@ -27,3 +27,14 @@ fun visitEachStepFrom(currentStep: Step, op: (Step) -> Unit) {
     }
 
 }
+
+fun Process.isFinished(): Boolean {
+    var isFinished = true
+
+    visitEachStep(this) {
+        if (StepState.FINISHED != it.getState())
+            isFinished = false
+    }
+
+    return isFinished
+}

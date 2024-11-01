@@ -8,6 +8,7 @@ import com.eder.engine.StepState.*
 import com.eder.engine.steps.OkStep
 import com.eder.engine.steps.RandomNumberStep
 import com.eder.engine.steps.VariableLogginStep
+import org.junit.jupiter.api.Assertions.assertTrue
 
 class EngineTest {
 
@@ -23,7 +24,7 @@ class EngineTest {
 
         process.startStep = step1
 
-        engine.execute(process)
+        engine.proceed(process)
 
         assertEquals(step2, process.currentSteps[0])
     }
@@ -54,7 +55,7 @@ class EngineTest {
 
         process.startStep = step1
 
-        engine.execute(process)
+        engine.proceed(process)
 
         visitEachStep(process) { assertEquals(FINISHED, it.getState()) }
     }
@@ -70,7 +71,7 @@ class EngineTest {
 
         process.startStep = step1
 
-        engine.execute(process)
+        engine.proceed(process)
     }
 
     @Test
@@ -86,14 +87,14 @@ class EngineTest {
 
         process.startStep = step1
 
-        engine.execute(process)
+        engine.proceed(process)
         assertEquals(FINISHED, step1.getState())
         assertEquals(WAITING, step2.getState())
         assertEquals(NEW, step3.getState())
 
         //WHEN
         step2.ok()
-        engine.execute(process)
+        engine.proceed(process)
 
 
         //THEN
@@ -101,6 +102,37 @@ class EngineTest {
         assertEquals(FINISHED, step2.getState())
         assertEquals(FINISHED, step3.getState())
 
+    }
+
+
+    /*****************************************
+                      step1.1 -> step 1.2
+        startStep ->
+                      step2.1 -> step.2.2
+     *****************************************/
+
+    @Test
+    fun `executed paralell steps`() {
+        val process = Process()
+
+        val startStep = LoggingStep(process,"step 0")
+        val step11 = LoggingStep(process,"step 1.1")
+        val step12 = LoggingStep(process,"step 1.2")
+        val step21 = LoggingStep(process,"step 2.1")
+        val step22 = LoggingStep(process,"step 2.2")
+
+
+        startStep.setNextSteps(listOf(step11, step21))
+        step11.setNextSteps(listOf(step12))
+        step21.setNextSteps(listOf(step22))
+
+        process.startStep = startStep
+
+        //WHEN
+        engine.proceed(process)
+
+        //THEN
+        assertTrue(process.isFinished())
     }
 
 }
