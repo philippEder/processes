@@ -5,7 +5,7 @@ package com.eder.engine
 class Engine {
 
     fun proceed(process: Process) {
-        visitEachStepList(process) { currentSteps ->
+        process.visitEachStepList { currentSteps ->
             process.currentSteps = currentSteps
             currentSteps.forEach {
                 if (it.getPreviousStep() == null || StepState.FINISHED == it.getPreviousStep()?.getState()) {

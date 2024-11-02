@@ -39,7 +39,7 @@ class EngineTest {
 
         process.startStep = step1
 
-        visitEachStep(process) { it.setState(IN_PROGRESS) }
+        process.visitEachStep { it.setState(IN_PROGRESS) }
 
         assertEquals(step1.getState(), IN_PROGRESS)
         assertEquals(step2.getState(), IN_PROGRESS)
@@ -57,7 +57,7 @@ class EngineTest {
 
         engine.proceed(process)
 
-        visitEachStep(process) { assertEquals(FINISHED, it.getState()) }
+        process.visitEachStep { assertEquals(FINISHED, it.getState()) }
     }
 
     @Test
