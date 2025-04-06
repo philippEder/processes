@@ -1,0 +1,30 @@
+{
+  "id": "12345",
+  "name": "simple Workflow Showcase",
+  "steps": [
+    {
+      "id": "1",
+      "key": "Logging"
+    },
+    {
+      "id": "2",
+      "key": "Logging"
+    },
+    {
+      "id": "3",
+      "key": "Logging"
+    }
+
+  ],
+  "links": [
+    {
+      "source": "1",
+      "target": "2"
+    },
+    {
+      "source": "2",
+      "target": "3"
+    }
+
+  ]
+}
