@@ -1,41 +1,51 @@
 package com.eder.engine.parser
 
-import kotlinx.serialization.json.Json
 import com.eder.engine.model.Process
 import com.eder.engine.model.Step
+import com.eder.engine.parser.model.WorkflowJson
+import kotlinx.serialization.json.Json
 
 class JsonToWorkflowParser {
 
-    fun parse(json: String): Process? {
-        val workflow = Json.Default.decodeFromString<WorkflowJson>(json)
+    fun parse(json: String): Process {
+        val decoder = Json { ignoreUnknownKeys = true}
+        val workflow = decoder.decodeFromString<WorkflowJson>(json)
 
-        val process = Process()
+        val process = Process(id = workflow.id)
 
-        workflow.steps.forEach { step ->
-            val sourceSteps = getSourceStepsFor(workflow, step)
-            val targetSteps = getTargetStepsFor(workflow, step)
-
-           // val stepImpl = Step(process)
-
-
-
-
+        val steps = workflow.steps.map {
+            Step(id = it.id,
+                 flow = process,
+                 state = Step.StepState.valueOf(it.state),
+                 key = it.key
+            )
         }
 
+        steps.forEach {
+            val sourceSteps = searchForSourceSteps(workflow, steps, it.id)
+            val targetSteps = searchForTargetSteps(workflow, steps, it.id)
 
+            //TODO: more than one source step possible?
+            it.previousStep = sourceSteps.firstOrNull()
+            it.nextSteps = targetSteps.toMutableList()
 
-        return Process()
+            if (it.previousStep == null) {
+                process.startStep = it
+            }
+        }
+
+        return process
     }
 
-    fun getSourceStepsFor(workflow: WorkflowJson, step: WorkflowStepJson): List<WorkflowStepJson> {
-        val sourceStepIds = workflow.links.filter { it.target == step.id }.map { it.source }
-        val sourceSteps = workflow.steps.filter { sourceStepIds.contains(it.id) }
+    fun searchForSourceSteps(workflow: WorkflowJson, allSteps: List<Step>, stepId: String): List<Step> {
+        val sourceStepIds = workflow.links.filter { it.target == stepId }.map { it.source }
+        val sourceSteps = allSteps.filter { sourceStepIds.contains(it.id) }
         return sourceSteps
     }
 
-    fun getTargetStepsFor(workflow: WorkflowJson, step: WorkflowStepJson): List<WorkflowStepJson> {
-        val targetStepIds = workflow.links.filter { it.source == step.id }.map { it.target }
-        val targetSteps = workflow.steps.filter { targetStepIds.contains(it.id) }
+    fun searchForTargetSteps(workflow: WorkflowJson, allSteps: List<Step>, stepId: String): List<Step> {
+        val targetStepIds = workflow.links.filter { it.source == stepId }.map { it.target }
+        val targetSteps = allSteps.filter { targetStepIds.contains(it.id) }
         return targetSteps
     }
 

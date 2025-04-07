@@ -9,4 +9,5 @@ plugins {
 rootProject.name = 'engine'
 include 'parser'
 include 'core'
+include 'exampleApp'
 
