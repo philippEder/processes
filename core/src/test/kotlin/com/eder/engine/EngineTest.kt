@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.assertTrue
 import com.eder.engine.model.Process
-import com.eder.engine.model.Step.StepState.*
+import com.eder.engine.model.ProcessElement.ProcessElementState.*
 import com.eder.engine.steps.OkStep
 import com.eder.engine.steps.RandomNumberStep
 import com.eder.engine.steps.VariableLogginStep
@@ -28,7 +28,7 @@ class EngineTest {
 
         engine.proceed(process)
 
-        assertEquals(step2, process.currentSteps[0])
+        assertEquals(step2, process.currentElements[0])
     }
 
     @Test
@@ -42,7 +42,7 @@ class EngineTest {
 
         process.startStep = step1
 
-        process.visitEachStep { it.state = IN_PROGRESS }
+        process.visitEachElement { it.state = IN_PROGRESS }
 
         assertEquals(step1.state, IN_PROGRESS)
         assertEquals(step2.state, IN_PROGRESS)
@@ -61,7 +61,7 @@ class EngineTest {
 
         engine.proceed(process)
 
-        process.visitEachStep { assertEquals(FINISHED, it.state) }
+        process.visitEachElement { assertEquals(FINISHED, it.state) }
     }
 
     @Test

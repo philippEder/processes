@@ -1,8 +1,8 @@
 package com.eder.engine
 
-import com.eder.engine.model.Step
+import com.eder.engine.model.ProcessElement
 
-fun Step.connectTo(targetStep: Step) {
-    nextSteps.add(targetStep)
-    targetStep.previousStep = this
+fun ProcessElement.connectTo(targetStep: ProcessElement) {
+    next.add(targetStep)
+    targetStep.previous = this
 }

@@ -5,21 +5,16 @@ import java.util.UUID
 //TODO: maybe better access modifiers
 open class Step(var id: String = UUID.randomUUID().toString(),
                 val flow: Process,
-                var state: StepState = StepState.NEW,
-                var nextSteps: MutableList<Step> = mutableListOf(),
-                var previousStep: Step? = null ,
-                val key: String) {
+                val key: String,
 
-    enum class StepState {
-        NEW,
-        IN_PROGRESS,
-        WAITING,
-        FAILED,
-        FINISHED
-    }
+                override var state: ProcessElement.ProcessElementState = ProcessElement.ProcessElementState.NEW,
+                override var next: MutableList<ProcessElement> = mutableListOf(),
+                override var previous: ProcessElement? = null): ProcessElement {
+
+
 
     //transient
-    open fun execute(): StepState {
+    override fun execute(): ProcessElement.ProcessElementState {
         throw IllegalArgumentException("cant call this on Step super class")
     }
 

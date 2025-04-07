@@ -1,6 +1,7 @@
 package com.eder.engine.parser
 
 import com.eder.engine.model.Process
+import com.eder.engine.model.ProcessElement.ProcessElementState
 import com.eder.engine.model.Step
 import com.eder.engine.parser.model.WorkflowJson
 import kotlinx.serialization.json.Json
@@ -16,7 +17,7 @@ class JsonToWorkflowParser {
         val steps = workflow.steps.map {
             Step(id = it.id,
                  flow = process,
-                 state = Step.StepState.valueOf(it.state),
+                 state = ProcessElementState.valueOf(it.state),
                  key = it.key
             )
         }
@@ -26,10 +27,10 @@ class JsonToWorkflowParser {
             val targetSteps = searchForTargetSteps(workflow, steps, it.id)
 
             //TODO: more than one source step possible?
-            it.previousStep = sourceSteps.firstOrNull()
-            it.nextSteps = targetSteps.toMutableList()
+            it.previous = sourceSteps.firstOrNull()
+            it.next = targetSteps.toMutableList()
 
-            if (it.previousStep == null) {
+            if (it.previous == null) {
                 process.startStep = it
             }
         }
